@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 # Usage: render.sh <frames_dir> <output.mp4>
 # Output is H.264 High/yuv420p so it plays on phones (4:4:4 does not play on Android).
-# Turns 00.png, 01.png, ... into a reel: 3s per frame, slow zoom, 0.5s crossfades.
+# Turns 00.png + 00_cap.png, ... into a reel: 3s per frame, slow zoom, caption overlaid after the zoom, 0.5s crossfades.
 set -euo pipefail
 FRAMES=$1; OUT=$(realpath -m "$2")
 cd "$FRAMES"
 N=$(ls [0-9][0-9].png | wc -l); D=3; X=0.5; FPS=30; inputs=(); fc=""
 for i in $(seq 0 $((N-1))); do
-  inputs+=(-i "$(printf '%02d' $i).png")
-  fc+="[$i:v]scale=2880:2160,zoompan=z='1+0.08*on/($D*$FPS)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=$((D*FPS)):s=1440x1080:fps=$FPS,setsar=1,format=yuv420p[v$i];"
+  inputs+=(-i "$(printf '%02d' $i).png" -i "$(printf '%02d' $i)_cap.png")
+  fc+="[$((2*i)):v]scale=2880:2160,zoompan=z='1+0.08*on/($D*$FPS)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=$((D*FPS)):s=1440x1080:fps=$FPS,setsar=1[z$i];"
+  fc+="[z$i][$((2*i+1)):v]overlay=0:990,format=yuv420p[v$i];"
 done
 prev=v0
 for i in $(seq 1 $((N-1))); do
