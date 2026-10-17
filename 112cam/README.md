@@ -19,7 +19,8 @@ Builds a short video from the 112cam "Person Detected" snapshot emails received 
    ```bash
    python3 -I 112cam/extract.py <saved-result.txt> $SCRATCH/imgs
    ```
-3. **Caption the frames** (sorted by filename = chronological, camera local time):
+3. **Caption the frames** (sorted by filename = chronological, camera local time). This writes each
+   snapshot plus a separate caption-bar PNG, which render.sh overlays after the zoom so it isn't cropped:
    ```bash
    python3 -I 112cam/caption.py $SCRATCH/imgs $SCRATCH/frames
    ```
@@ -33,4 +34,9 @@ Builds a short video from the 112cam "Person Detected" snapshot emails received 
 6. **Deliver** the video with `SendUserFile` (`display: render`) and a one-line caption listing
    how many alerts and their times. If there were no alerts in the window, just say so.
 
-Requirements: `ffmpeg`, Python 3 with Pillow.
+Requirements: `ffmpeg`, Python 3 with Pillow (if missing: `python3 -m pip install pillow`, using the same
+interpreter that runs the scripts).
+
+The scheduled task ("112cam daily highlight reel", 18:53 UK daily) carries its own copy of these
+scripts in its prompt, because cloud sessions refuse to run scripts cloned from GitHub. When you change
+a script here, update the task's prompt too.
