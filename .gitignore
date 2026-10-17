@@ -1,0 +1,6 @@
+# Camera media must never be committed (public repo)
+*.mp4
+*.jpg
+*.jpeg
+*.png
+112cam_images/
